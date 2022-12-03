@@ -1,5 +1,8 @@
 ((globalThis) => {
-  const core = Deno.core;
+  const { core } = Deno;
+  const { ops } = core;
+
+  core.initializeAsyncOps();
 
   function argsToMessage(...args) {
     return args.map((arg) => JSON.stringify(arg)).join(" ");
@@ -11,6 +14,18 @@
     },
     error: (...args) => {
       core.print(`[err]: ${argsToMessage(...args)}\n`, true);
+    },
+  };
+
+  globalThis.vehicle = {
+    readFile: (path) => {
+      return ops.op_read_file(path);
+    },
+    writeFile: (path, contents) => {
+      return ops.op_write_file(path, contents);
+    },
+    removeFile: (path) => {
+      return ops.op_remove_file(path);
     },
   };
 })(globalThis);
