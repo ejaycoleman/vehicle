@@ -10,6 +10,7 @@ async fn run_js(file_path: &str) -> Result<(), AnyError> {
         module_loader: Some(Rc::new(deno_core::FsModuleLoader)),
         ..Default::default()
     });
+    js_runtime.execute_script("[runjs:runtime.js]", include_str!("./runtime.js")).unwrap();
 
     // load module and all dependencies
     let mod_id = js_runtime.load_main_module(&main_module, None).await?;

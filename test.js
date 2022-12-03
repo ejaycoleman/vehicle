@@ -1,1 +1,2 @@
-Deno.core.print("Running!");
+console.log("Hello", "world!");
+console.error("Hello", "error!");
