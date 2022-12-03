@@ -27,5 +27,9 @@
     removeFile: (path) => {
       return ops.op_remove_file(path);
     },
+    setTimeout: async (callback, timeout) => {
+      await ops.timeout(timeout);
+      callback();
+    },
   };
 })(globalThis);

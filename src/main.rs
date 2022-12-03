@@ -4,6 +4,12 @@ use std::rc::Rc;
 use deno_core::error::AnyError;
 
 #[op]
+async fn timeout(duration: u64) -> Result<(), AnyError> {
+    tokio::time::sleep(tokio::time::Duration::from_millis(duration)).await;
+    Ok(())
+}
+
+#[op]
 async fn op_read_file(path: String) -> Result<String, AnyError> {
     let contents = tokio::fs::read_to_string(path).await?;
     Ok(contents)
@@ -28,6 +34,7 @@ async fn vehicle(file_path: &str) -> Result<(), AnyError> {
         op_read_file::decl(),
         op_write_file::decl(),
         op_remove_file::decl(),
+        timeout::decl(),
     ]).build();
     
     // create new JS runtime with file-system based module loader
@@ -50,7 +57,7 @@ async fn vehicle(file_path: &str) -> Result<(), AnyError> {
     result.await?
 }
 
-fn main() {
+fn main() {    
     let runtime = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
 
     if let Err(error) = runtime.block_on(vehicle("./test.js")) {
