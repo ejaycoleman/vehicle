@@ -16,5 +16,19 @@
 // vehicle.removeFile(path);
 // console.log("File removed");
 
-vehicle.setTimeout(() => console.log("After 3 seconds"), 3000);
-console.log("test");
+// vehicle.setTimeout(() => console.log("After 3 seconds"), 3000);
+// console.log("test");
+
+// vehicle.websocket("4000", () => console.log("connect"));
+
+async function main() {
+  const { resourceId, port } = vehicle.listen(3000);
+  console.log(`http_bench_ops listening on http://127.0.0.1:${port}`);
+
+  while (true) {
+    const rid = await vehicle.accept(resourceId);
+    vehicle.serve(rid);
+  }
+}
+
+main();
