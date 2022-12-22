@@ -9,17 +9,16 @@ use deno_core::OpState;
 use deno_core::ResourceId;
 use std::cell::RefCell;
 use std::net::SocketAddr;
-use implementations::web_sockets::ListenResult;
 use implementations::web_sockets::TcpListener;
 
 #[op]
-fn op_listen(state: &mut OpState, port: u64) -> Result<ListenResult, Error> {
+fn op_listen(state: &mut OpState, port: u64) -> Result<ResourceId, Error> {
   let addr = format!("127.0.0.1:{port}").parse::<SocketAddr>().unwrap();
   let std_listener = std::net::TcpListener::bind(addr)?;
   std_listener.set_nonblocking(true)?;
   let listener = TcpListener::try_from(std_listener)?;
   let rid = state.resource_table.add(listener);
-  Ok(ListenResult {resource_id: rid, port})
+  Ok(rid)
 }
 
 #[op]

@@ -42,34 +42,35 @@
       callback();
     },
     listen: (port) => {
-      return ops.op_listen(port);
-    },
-    accept: (serverRid) => {
-      return ops.op_accept(serverRid);
-    },
-    serve: async (rid) => {
-      try {
-        while (true) {
-          await core.read(rid, requestBuf);
+      const { resourceId } = ops.op_listen(port);
+      return {
+        port,
+        accept: async (callback) => {
+          const acc = await ops.op_accept(resourceId);
+          try {
+            while (true) {
+              await core.read(acc, requestBuf);
 
-          let readValue = "";
-          requestBuf.forEach((a) => {
-            if (a !== 0) {
-              readValue += String.fromCharCode(a);
+              let readValue = "";
+              requestBuf.forEach((a) => {
+                if (a !== 0) {
+                  readValue += String.fromCharCode(a);
+                }
+              });
+
+              await core.writeAll(acc, responseBuf(callback(readValue)));
             }
-          });
-
-          await core.writeAll(rid, responseBuf(readValue));
-        }
-      } catch (e) {
-        if (
-          !e.message.includes("Broken pipe") &&
-          !e.message.includes("Connection reset by peer")
-        ) {
-          throw e;
-        }
-      }
-      core.close(rid);
+          } catch (e) {
+            if (
+              !e.message.includes("Broken pipe") &&
+              !e.message.includes("Connection reset by peer")
+            ) {
+              throw e;
+            }
+          }
+          core.close(acc);
+        },
+      };
     },
   };
 })(globalThis);

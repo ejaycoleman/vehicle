@@ -5,10 +5,6 @@ use deno_core::CancelHandle;
 use deno_core::CancelTryFuture;
 use deno_core::RcRef;
 use deno_core::Resource;
-use deno_core::ResourceId;
-use deno_core::serde::Serialize;
-use deno_core::serde::Serializer;
-use deno_core::serde::ser::SerializeStruct;
 use std::rc::Rc;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -82,22 +78,5 @@ impl From<tokio::net::TcpStream> for TcpStream {
       wr: wr.into(),
       cancel: Default::default(),
     }
-  }
-}
-
-pub struct ListenResult{
-  pub resource_id: ResourceId,
-  pub port: u64,
-}
-
-impl Serialize for ListenResult {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-      S: Serializer,
-  {
-      let mut s = serializer.serialize_struct("ListenResult", 2)?;
-      s.serialize_field("resourceId", &self.resource_id)?;
-      s.serialize_field("port", &self.port)?;
-      s.end()
   }
 }
