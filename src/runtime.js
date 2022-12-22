@@ -18,11 +18,14 @@
   };
 
   const requestBuf = new Uint8Array(64 * 1024);
-  const responseBuf = new Uint8Array(
-    "HTTP/1.1 200 OK\r\nContent-Length: 12\r\n\r\nHello World\n"
-      .split("")
-      .map((c) => c.charCodeAt(0))
-  );
+  const responseBuf = (v) =>
+    new Uint8Array(
+      `HTTP/1.1 200 OK\r\nContent-Length: ${
+        `{"request": "${v}"}`.length
+      }\r\nContent-Type: application/json\r\n\r\n{"request": "${v}"}\n`
+        .split("")
+        .map((c) => c.charCodeAt(0))
+    );
 
   globalThis.vehicle = {
     readFile: (path) => {
@@ -48,7 +51,15 @@
       try {
         while (true) {
           await core.read(rid, requestBuf);
-          await core.writeAll(rid, responseBuf);
+
+          let readValue = "";
+          requestBuf.forEach((a) => {
+            if (a !== 0) {
+              readValue += String.fromCharCode(a);
+            }
+          });
+
+          await core.writeAll(rid, responseBuf(readValue));
         }
       } catch (e) {
         if (
