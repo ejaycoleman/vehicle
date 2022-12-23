@@ -46,19 +46,20 @@
       return {
         port,
         accept: async (callback) => {
-          const acc = await ops.op_accept(resourceId);
+          const acceptedConnection = await ops.op_accept(resourceId);
           try {
             while (true) {
-              await core.read(acc, requestBuf);
+              await core.read(acceptedConnection, requestBuf);
 
-              let readValue = "";
-              requestBuf.forEach((a) => {
-                if (a !== 0) {
-                  readValue += String.fromCharCode(a);
-                }
-              });
+              const request = requestBuf.reduce(
+                (a, b) => (a += b ? String.fromCharCode(b) : ""),
+                ""
+              );
 
-              await core.writeAll(acc, responseBuf(callback(readValue)));
+              await core.writeAll(
+                acceptedConnection,
+                responseBuf(callback(request))
+              );
             }
           } catch (e) {
             if (
@@ -68,7 +69,7 @@
               throw e;
             }
           }
-          core.close(acc);
+          core.close(acceptedConnection);
         },
       };
     },
