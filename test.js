@@ -22,12 +22,16 @@
 // vehicle.websocket("4000", () => console.log("connect"));
 
 async function main() {
-  const { resourceId, port } = vehicle.listen(3000);
+  const { accept, port } = vehicle.listen(3000);
   console.log(`http_bench_ops listening on http://127.0.0.1:${port}`);
 
   while (true) {
-    const rid = await vehicle.accept(resourceId);
-    vehicle.serve(rid);
+    const { serve } = await accept();
+    serve((req) => {
+      console.log(req);
+      const res = "res";
+      return res;
+    });
   }
 }
 
