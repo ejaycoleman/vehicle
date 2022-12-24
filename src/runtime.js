@@ -41,10 +41,11 @@
       await ops.timeout(timeout);
       callback();
     },
-    listen: (port) => {
-      const { resourceId } = ops.op_listen(port);
+    listen: (ip, port) => {
+      const resourceId = ops.op_listen(ip, port);
       return {
         port,
+        ip,
         accept: async () => {
           const rid = await ops.op_accept(resourceId);
           return {

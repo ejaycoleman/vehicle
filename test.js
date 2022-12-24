@@ -22,8 +22,8 @@
 // vehicle.websocket("4000", () => console.log("connect"));
 
 async function main() {
-  const { accept, port } = vehicle.listen(3000);
-  console.log(`http_bench_ops listening on http://127.0.0.1:${port}`);
+  const { accept, port, ip } = vehicle.listen("127.0.0.1", 3000);
+  console.log(`http_bench_ops listening on http://${ip}:${port}`);
 
   while (true) {
     const { serve } = await accept();
