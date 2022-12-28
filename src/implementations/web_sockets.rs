@@ -30,9 +30,7 @@ impl Resource for TcpListener {
 
 impl TryFrom<std::net::TcpListener> for TcpListener {
   type Error = std::io::Error;
-  fn try_from(
-    std_listener: std::net::TcpListener,
-  ) -> Result<Self, Self::Error> {
+  fn try_from(std_listener: std::net::TcpListener) -> Result<Self, Self::Error> {
     tokio::net::TcpListener::try_from(std_listener).map(|tokio_listener| Self {
       inner: tokio_listener,
       cancel: Default::default(),
