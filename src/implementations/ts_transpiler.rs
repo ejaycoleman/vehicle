@@ -52,7 +52,10 @@ impl ModuleLoader for TypescriptModuleLoader {
           | MediaType::Tsx => (ModuleType::JavaScript, true),
           MediaType::Json => (ModuleType::Json, false),
           _ => {
-            panic!("Unknown extension {:?}", Path::new(&path).extension().unwrap());
+            // TODO improve this for efficiency:
+            // 'import {} from' can be extensionless - attempt to parse anyway
+            // another error will soon be encountered if extensionless files dont contain something valid. 
+            (ModuleType::JavaScript, true)
           }
         };
 
